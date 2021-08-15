@@ -1,0 +1,50 @@
+﻿@page "/hotel-room-order"
+@using Business.Repository.IRepository
+@using Models
+@using Radzen
+@inject IRoomOrderRepository RoomOrderRepository
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
+
+
+@if (!IsLoading)
+{
+    <h4 class="card-title text-info">Hotel Room Order's</h4>
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" PageSize="10" AllowPaging="true" AllowSorting="true" Data="@HotelRoomOrders" TItem="RoomOrderDetailsDto" ColumnWidth="200px" LogicalFilterOperator="LogicalFilterOperator.Or">
+        <Columns>
+            <RadzenDataGridColumn TItem="RoomOrderDetailsDto" Property="Name" Title="Customer Name" />
+            <RadzenDataGridColumn TItem="RoomOrderDetailsDto" Property="Phone" Title="Phone" />
+            <RadzenDataGridColumn TItem="RoomOrderDetailsDto" Property="Email" Title="Email" />
+            <RadzenDataGridColumn TItem="RoomOrderDetailsDto" Property="HotelRoomDto.Name" Title="Room Name" />
+            <RadzenDataGridColumn TItem="RoomOrderDetailsDto" Property="Status" Title="Status" />
+            <RadzenDataGridColumn TItem="RoomOrderDetailsDto" Property="CheckInDate" Title="Check in Date">
+                <Template Context="data">
+                    @String.Format("{0:d}",data.CheckInDate)
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="RoomOrderDetailsDto" Property="Id" Title="">
+                <Template Context="data">
+                    <NavLink class="btn btn-primary" href="@($"hotel-room-order/details/{data.Id}")">Details</NavLink>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}
+else
+{
+    <p>loading...</p>
+}
+
+
+@code {
+    private IEnumerable<RoomOrderDetailsDto> HotelRoomOrders { set; get; } = new List<RoomOrderDetailsDto>();
+    private bool IsLoading { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        HotelRoomOrders = await RoomOrderRepository.GetAllRoomOrderDetails();
+        IsLoading = false;
+    }
+
+}

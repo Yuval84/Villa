@@ -1,0 +1,39 @@
+﻿@using Villa_Server.Model
+
+
+<div class="bg-light border p-2 col-5 offset-1">
+    <h4 class="text-secondary">Room- @Room.Id</h4>
+    
+    <input type="checkbox" @onchange="RoomCheckBoxSelectedChanged"/>
+    @Room.RoomName<br/>
+    @Room.Price.ToString("c")<br/>
+    <input type="checkbox" @bind-value="Room.IsActive" checked="@(Room.IsActive?"checked":null)"/> &nbsp; Is Active <br/>
+    <span>This Room is @(Room.IsActive?"Active": "InActive")</span>
+    
+    @if (Room.IsActive)
+    {
+        @foreach (var roomProp in Room.RoomProps)
+        {
+            <p>@roomProp.Name - @roomProp.Value</p>
+        }
+    }
+</div>
+
+
+
+
+
+
+@code {
+    [Parameter]
+    public BlazorRoom Room { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnRoomCheckBoxSelection { get; set; }
+
+    protected async Task RoomCheckBoxSelectedChanged(ChangeEventArgs e)
+    {
+        await OnRoomCheckBoxSelection.InvokeAsync((bool)e.Value);
+    }
+
+}
